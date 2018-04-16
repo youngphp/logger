@@ -8,6 +8,16 @@ import (
 	"time"
 )
 
+type LogData struct {
+	Message      string
+	TimeStr      string
+	LevelStr     string
+	FileName     string
+	FuncName     string
+	LineNo       int
+	WarnAndFatal bool
+}
+
 func CheckPathIsExits(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -49,12 +59,25 @@ func GetLevelText(level int) (levelName string) {
 	return
 }
 
-func WriteLog(file *os.File, level int, format string, args ...interface{}) {
+func WriteLog(level int, format string, args ...interface{}) *LogData {
 	msg := fmt.Sprintf(format, args...)
 	nowStr := time.Now().Format("2006-01-02 15:04:05")
 	fileName, funcName, lineNo := GetLineInfo()
 	fileName = path.Base(fileName)
 	funcName = path.Base(funcName)
 	levelName := GetLevelText(level)
-	fmt.Fprintf(file, "[%s][%s][%s---%s:%d] :%s\n", nowStr, levelName, fileName, funcName, lineNo, msg)
+	logdata := &LogData{
+		Message:      msg,
+		TimeStr:      nowStr,
+		LevelStr:     levelName,
+		FileName:     fileName,
+		FuncName:     funcName,
+		LineNo:       lineNo,
+		WarnAndFatal: false,
+	}
+	if level == WarnLevel || level == ErrorLevel || level == FatalLevel {
+		logdata.WarnAndFatal = true
+	}
+	return logdata
+	//fmt.Fprintf(file, "[%s][%s][%s---%s:%d] :%s\n", nowStr, levelName, fileName, funcName, lineNo, msg)
 }
