@@ -4,7 +4,7 @@
     go get -u github.com/youngphp/logger  
 ***
 ### 详情可查看logger_test.go
-    func TestFileLogger(t *testing.T) {
+func TestFileLogger(t *testing.T) {
 	log := NewFileLogger(DebugLevel, "f:/testlog")
 	log.Debug("the use is %s age is %d", "fei", 20)
 	log.Warn("the warn is %s", "open file is error")
